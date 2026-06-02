@@ -1130,7 +1130,53 @@
         }
     }, 500); 
 </script>
+// Asegúrate de que SCRIPT_URL esté definido en config.js, ej: const SCRIPT_URL = "TU_URL_AQUI";
 
+async function guardarProducto(event) {
+    event.preventDefault(); // Evita que la página se recargue
+
+    // Obtener los datos del formulario
+    const datos = {
+        action: 'guardar',
+        sucursal: document.getElementById('prod-sucursal').value,
+        producto: document.getElementById('prod-name').value,
+        proveedor: document.getElementById('prod-prov').value,
+        vineta: document.getElementById('prod-vineta').value,
+        cantidad: document.getElementById('prod-qty').value,
+        fecha: document.getElementById('prod-date').value
+    };
+
+    // Validar (opcional)
+    if (!datos.sucursal || !datos.producto) {
+        alert("Por favor llena los campos obligatorios");
+        return;
+    }
+
+    // Preparar el envío
+    const formData = new FormData();
+    for (const key in datos) {
+        formData.append(key, datos[key]);
+    }
+
+    alert("Enviando datos, por favor espera...");
+
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: formData
+        });
+
+        const resultado = await response.text();
+        console.log("Respuesta del servidor:", resultado);
+        alert("Datos enviados con éxito a la hoja de cálculo.");
+        
+        // Limpiar formulario
+        document.getElementById('vencidos-form').reset();
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Hubo un error al enviar los datos. Revisa la consola (F12).");
+    }
+}
 <script>
     // Tu código va aquí adentro, así el navegador sabrá que es programación
     function enviarAGoogle(producto, vencimiento, lote, estado) {
